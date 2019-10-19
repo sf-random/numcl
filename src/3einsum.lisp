@@ -471,6 +471,7 @@ The step size for axis j is the product of the dimensions after j-th axes for th
      (let ((i-vars (i-vars i-specs))
            (o-vars (o-vars o-specs)))
        `(lambda (,@i-vars &optional ,@o-vars)
+          (declare (optimize (speed 0) (safety 3) (debug 3)))
           ;; resolve input array shapes
           (let* ,@(shape-resolver i-vars i-specs i-options) ;; including declarations / assertions
             ;; generate or reuse output arrays
@@ -482,7 +483,7 @@ The step size for axis j is the product of the dimensions after j-th axes for th
                             (collecting
                               `(,var (array-displacement ,var))))
                   (specializing (,@i-vars ,@o-vars) ()
-                    (declare (optimize (speed 3) (safety 0)))
+                    (declare (optimize (speed 3) (safety 0) (debug 0)))
                     (declare (type index ,@(mapcar #'? (remove -1 iter-specs))))
                     ,(einsum-body *compiler* einsum-specs)))
                 (values ,@(mapcar (lambda (var) `(ensure-singleton ,var))
